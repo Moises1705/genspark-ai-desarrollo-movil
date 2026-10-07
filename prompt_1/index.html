@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Lista de Tareas</title>
+  <meta name="description" content="Aplicación web sencilla de lista de tareas: agrega, completa y elimina tareas.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="app__header">
+      <h1 class="app__title">
+        <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+        Mi Lista de Tareas
+      </h1>
+      <p class="app__subtitle">Organiza tu día, una tarea a la vez</p>
+    </header>
+
+    <form id="task-form" class="task-form" autocomplete="off">
+      <label for="task-input" class="sr-only">Nueva tarea</label>
+      <input
+        type="text"
+        id="task-input"
+        class="task-form__input"
+        placeholder="¿Qué necesitas hacer?"
+        maxlength="200"
+        required>
+      <button type="submit" class="task-form__button" aria-label="Agregar tarea">
+        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+        <span>Agregar</span>
+      </button>
+    </form>
+
+    <section class="filters" aria-label="Filtros de tareas">
+      <button class="filters__btn is-active" data-filter="todas">Todas</button>
+      <button class="filters__btn" data-filter="pendientes">Pendientes</button>
+      <button class="filters__btn" data-filter="completadas">Completadas</button>
+    </section>
+
+    <section class="task-list" id="task-list" aria-live="polite" aria-label="Lista de tareas">
+      <!-- Las tareas se insertan dinámicamente aquí -->
+    </section>
+
+    <p class="empty-state" id="empty-state" hidden>
+      <i class="fa-regular fa-clipboard" aria-hidden="true"></i>
+      No hay tareas para mostrar.
+    </p>
+
+    <p class="loading-state" id="loading-state">
+      <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+      Cargando tareas...
+    </p>
+
+    <footer class="app__footer">
+      <span id="task-stats" class="app__stats"></span>
+      <button id="clear-completed" class="app__clear" type="button">
+        <i class="fa-solid fa-broom" aria-hidden="true"></i>
+        Limpiar completadas
+      </button>
+    </footer>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
