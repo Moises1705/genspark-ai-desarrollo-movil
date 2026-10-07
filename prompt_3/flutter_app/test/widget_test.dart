@@ -25,6 +25,39 @@ void main() {
     await tester.pumpAndSettle();
 
     // La tarjeta debe mostrar la ciudad buscada.
-    expect(find.text('Madrid'), findsOneWidget);
+    // NOTA: antes este test usaba `find.text('Madrid')` y fallaba porque
+    // encontraba 2 widgets (el campo de texto Y la tarjeta). Ahora buscamos
+    // el texto "Madrid" solo dentro del WeatherCard.
+    expect(
+      find.descendant(
+        of: find.byType(Card),
+        matching: find.text('Madrid'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('El botón alterna entre modo claro y modo oscuro',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const ClimaRapidoApp());
+
+    // Estado inicial: modo claro -> el botón muestra el ícono "dark_mode".
+    expect(find.byIcon(Icons.dark_mode), findsOneWidget);
+    expect(find.byIcon(Icons.light_mode), findsNothing);
+
+    // Toca el botón para pasar a modo oscuro.
+    await tester.tap(find.byIcon(Icons.dark_mode));
+    await tester.pumpAndSettle();
+
+    // Ahora el botón debe ofrecer volver al modo claro.
+    expect(find.byIcon(Icons.light_mode), findsOneWidget);
+    expect(find.byIcon(Icons.dark_mode), findsNothing);
+
+    // Toca de nuevo para regresar al modo claro.
+    await tester.tap(find.byIcon(Icons.light_mode));
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.dark_mode), findsOneWidget);
+    expect(find.byIcon(Icons.light_mode), findsNothing);
   });
 }

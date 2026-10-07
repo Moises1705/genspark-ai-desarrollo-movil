@@ -1,0 +1,162 @@
+--- a/lib/main.dart
++++ b/lib/main.dart
+@@ -7,21 +7,61 @@
+ }
+ 
+ /// Raíz de la aplicación "Clima Rápido".
+-class ClimaRapidoApp extends StatelessWidget {
++///
++/// Es un [StatefulWidget] porque ahora administra el tema (claro/oscuro) y
++/// expone un botón en la pantalla principal para alternarlo.
++class ClimaRapidoApp extends StatefulWidget {
+   const ClimaRapidoApp({super.key});
+ 
+   @override
++  State<ClimaRapidoApp> createState() => _ClimaRapidoAppState();
++}
++
++class _ClimaRapidoAppState extends State<ClimaRapidoApp> {
++  /// Color de marca de la app, usado como semilla para generar ambos temas.
++  static const Color _seedColor = Color(0xFF4A90E2);
++
++  /// Estado actual del tema. Empieza en claro.
++  ThemeMode _themeMode = ThemeMode.light;
++
++  /// Alterna entre el modo claro y el modo oscuro.
++  void _toggleTheme() {
++    setState(() {
++      _themeMode =
++          _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
++    });
++  }
++
++  @override
+   Widget build(BuildContext context) {
+     return MaterialApp(
+       title: 'Clima Rápido',
+       debugShowCheckedModeBanner: false,
+-      theme: ThemeData(
+-        useMaterial3: true,
+-        colorScheme: ColorScheme.fromSeed(
+-          seedColor: const Color(0xFF4A90E2),
+-        ),
++      theme: _buildTheme(Brightness.light),
++      darkTheme: _buildTheme(Brightness.dark),
++      themeMode: _themeMode,
++      home: WeatherScreen(
++        isDarkMode: _themeMode == ThemeMode.dark,
++        onToggleTheme: _toggleTheme,
++      ),
++    );
++  }
++
++  /// Construye un [ThemeData] a partir de la semilla, para el brillo indicado.
++  ThemeData _buildTheme(Brightness brightness) {
++    return ThemeData(
++      useMaterial3: true,
++      brightness: brightness,
++      colorScheme: ColorScheme.fromSeed(
++        seedColor: _seedColor,
++        brightness: brightness,
++      ),
++      appBarTheme: const AppBarTheme(
++        backgroundColor: _seedColor,
++        foregroundColor: Colors.white,
++        elevation: 0,
++        centerTitle: true,
+       ),
+-      home: const WeatherScreen(),
+     );
+   }
+ }
+--- a/lib/screens/weather_screen.dart
++++ b/lib/screens/weather_screen.dart
+@@ -7,8 +7,19 @@
+ /// Pantalla principal de "Clima Rápido".
+ ///
+ /// Permite escribir una ciudad y muestra una tarjeta con el clima de ejemplo.
++/// Recibe el estado del tema y un callback para alternar entre claro y oscuro.
+ class WeatherScreen extends StatefulWidget {
+-  const WeatherScreen({super.key});
++  /// Indica si el modo oscuro está activo actualmente.
++  final bool isDarkMode;
++
++  /// Se llama cuando el usuario toca el botón para cambiar de tema.
++  final VoidCallback onToggleTheme;
++
++  const WeatherScreen({
++    super.key,
++    required this.isDarkMode,
++    required this.onToggleTheme,
++  });
+ 
+   @override
+   State<WeatherScreen> createState() => _WeatherScreenState();
+@@ -65,10 +76,20 @@
+     return Scaffold(
+       appBar: AppBar(
+         title: const Text('Clima Rápido'),
+-        centerTitle: true,
+-        backgroundColor: const Color(0xFF4A90E2),
+-        foregroundColor: Colors.white,
+-        elevation: 0,
++        // El color de fondo/foreground ahora lo define el AppBarTheme del
++        // MaterialApp, así que aquí no lo fijamos para que respete el tema.
++        actions: [
++          IconButton(
++            // Ícono y tooltip dependen del tema actual.
++            icon: Icon(
++              widget.isDarkMode ? Icons.light_mode : Icons.dark_mode,
++            ),
++            tooltip: widget.isDarkMode
++                ? 'Cambiar a modo claro'
++                : 'Cambiar a modo oscuro',
++            onPressed: widget.onToggleTheme,
++          ),
++        ],
+       ),
+       body: SafeArea(
+         child: SingleChildScrollView(
+--- a/test/widget_test.dart
++++ b/test/widget_test.dart
+@@ -25,6 +25,39 @@
+     await tester.pumpAndSettle();
+ 
+     // La tarjeta debe mostrar la ciudad buscada.
+-    expect(find.text('Madrid'), findsOneWidget);
++    // NOTA: antes este test usaba `find.text('Madrid')` y fallaba porque
++    // encontraba 2 widgets (el campo de texto Y la tarjeta). Ahora buscamos
++    // el texto "Madrid" solo dentro del WeatherCard.
++    expect(
++      find.descendant(
++        of: find.byType(Card),
++        matching: find.text('Madrid'),
++      ),
++      findsOneWidget,
++    );
++  });
++
++  testWidgets('El botón alterna entre modo claro y modo oscuro',
++      (WidgetTester tester) async {
++    await tester.pumpWidget(const ClimaRapidoApp());
++
++    // Estado inicial: modo claro -> el botón muestra el ícono "dark_mode".
++    expect(find.byIcon(Icons.dark_mode), findsOneWidget);
++    expect(find.byIcon(Icons.light_mode), findsNothing);
++
++    // Toca el botón para pasar a modo oscuro.
++    await tester.tap(find.byIcon(Icons.dark_mode));
++    await tester.pumpAndSettle();
++
++    // Ahora el botón debe ofrecer volver al modo claro.
++    expect(find.byIcon(Icons.light_mode), findsOneWidget);
++    expect(find.byIcon(Icons.dark_mode), findsNothing);
++
++    // Toca de nuevo para regresar al modo claro.
++    await tester.tap(find.byIcon(Icons.light_mode));
++    await tester.pumpAndSettle();
++
++    expect(find.byIcon(Icons.dark_mode), findsOneWidget);
++    expect(find.byIcon(Icons.light_mode), findsNothing);
+   });
+ }

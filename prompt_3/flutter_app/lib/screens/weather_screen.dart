@@ -7,8 +7,19 @@ import '../widgets/weather_card.dart';
 /// Pantalla principal de "Clima Rápido".
 ///
 /// Permite escribir una ciudad y muestra una tarjeta con el clima de ejemplo.
+/// Recibe el estado del tema y un callback para alternar entre claro y oscuro.
 class WeatherScreen extends StatefulWidget {
-  const WeatherScreen({super.key});
+  /// Indica si el modo oscuro está activo actualmente.
+  final bool isDarkMode;
+
+  /// Se llama cuando el usuario toca el botón para cambiar de tema.
+  final VoidCallback onToggleTheme;
+
+  const WeatherScreen({
+    super.key,
+    required this.isDarkMode,
+    required this.onToggleTheme,
+  });
 
   @override
   State<WeatherScreen> createState() => _WeatherScreenState();
@@ -65,10 +76,20 @@ class _WeatherScreenState extends State<WeatherScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Clima Rápido'),
-        centerTitle: true,
-        backgroundColor: const Color(0xFF4A90E2),
-        foregroundColor: Colors.white,
-        elevation: 0,
+        // El color de fondo/foreground ahora lo define el AppBarTheme del
+        // MaterialApp, así que aquí no lo fijamos para que respete el tema.
+        actions: [
+          IconButton(
+            // Ícono y tooltip dependen del tema actual.
+            icon: Icon(
+              widget.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+            ),
+            tooltip: widget.isDarkMode
+                ? 'Cambiar a modo claro'
+                : 'Cambiar a modo oscuro',
+            onPressed: widget.onToggleTheme,
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
