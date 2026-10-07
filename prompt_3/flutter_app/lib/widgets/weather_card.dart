@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/weather.dart';
+import '../theme/app_colors.dart';
 
 /// Tarjeta visual que muestra el clima actual de una ciudad.
 class WeatherCard extends StatelessWidget {
@@ -12,6 +13,13 @@ class WeatherCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    // En modo oscuro la tarjeta usa un azul algo más claro para que se
+    // distinga sobre el fondo oscuro; en modo claro usa el azul oscuro.
+    final isDark = theme.brightness == Brightness.dark;
+    final gradientColors = isDark
+        ? const [AppColors.primaryDarkBlueBright, AppColors.primaryDarkBlueDeep]
+        : const [AppColors.primaryDarkBlue, AppColors.primaryDarkBlueDeep];
+
     return Card(
       elevation: 6,
       shape: RoundedRectangleBorder(
@@ -21,11 +29,11 @@ class WeatherCard extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF4A90E2), Color(0xFF2C5F9E)],
+            colors: gradientColors,
           ),
         ),
         child: Column(

@@ -18,6 +18,9 @@ dependencies:
   # Por ahora la app usa datos de ejemplo en weather_service.dart.
   http: 1.5.0
 
+  # Almacenamiento local clave-valor: guarda el modo oscuro entre sesiones.
+  shared_preferences: 2.5.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

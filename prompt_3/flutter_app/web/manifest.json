@@ -1,11 +1,11 @@
 {
-    "name": "climarapido",
-    "short_name": "climarapido",
+    "name": "Clima Rápido",
+    "short_name": "Clima Rápido",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0D2B57",
+    "theme_color": "#0D2B57",
+    "description": "Clima Rápido - consulta el clima de cualquier ciudad con una tarjeta clara y rápida.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

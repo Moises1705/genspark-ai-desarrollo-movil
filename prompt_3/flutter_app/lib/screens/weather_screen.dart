@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../models/weather.dart';
 import '../services/weather_service.dart';
+import '../theme/app_colors.dart';
 import '../widgets/weather_card.dart';
+import 'settings_screen.dart';
 
 /// Pantalla principal de "Clima Rápido".
 ///
 /// Permite escribir una ciudad y muestra una tarjeta con el clima de ejemplo.
-/// Recibe el estado del tema y un callback para alternar entre claro y oscuro.
+/// Recibe el estado del tema y callbacks para alternarlo o abrir Configuración.
 class WeatherScreen extends StatefulWidget {
   /// Indica si el modo oscuro está activo actualmente.
   final bool isDarkMode;
@@ -15,10 +17,14 @@ class WeatherScreen extends StatefulWidget {
   /// Se llama cuando el usuario toca el botón para cambiar de tema.
   final VoidCallback onToggleTheme;
 
+  /// Se llama cuando el usuario cambia el modo oscuro desde Configuración.
+  final ValueChanged<bool> onDarkModeChanged;
+
   const WeatherScreen({
     super.key,
     required this.isDarkMode,
     required this.onToggleTheme,
+    required this.onDarkModeChanged,
   });
 
   @override
@@ -71,6 +77,18 @@ class _WeatherScreenState extends State<WeatherScreen> {
     }
   }
 
+  /// Abre la pantalla de Configuración.
+  void _openSettings() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SettingsScreen(
+          isDarkMode: widget.isDarkMode,
+          onDarkModeChanged: widget.onDarkModeChanged,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,6 +106,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 ? 'Cambiar a modo claro'
                 : 'Cambiar a modo oscuro',
             onPressed: widget.onToggleTheme,
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Configuración',
+            onPressed: _openSettings,
           ),
         ],
       ),
@@ -133,7 +156,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
           child: FilledButton(
             onPressed: _isLoading ? null : _search,
             style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFF4A90E2),
+              backgroundColor: AppColors.primaryDarkBlue,
+              foregroundColor: AppColors.onPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),

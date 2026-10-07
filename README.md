@@ -4,12 +4,15 @@ Trabajo grupal: pruebas de **Genspark.ai/code**, un agente de IA que programa si
 
 ## Estructura
 
-| Carpeta | Prompt | Tecnología | Resultado |
+| Prompt | Qué se pidió | Tecnología | Resultado |
 |---|---|---|---|
-| `prompt_1` | Lista de tareas (to-do) desde cero | HTML, CSS, JavaScript | Funcionó, con una corrección |
-| `prompt_2` | App "GastosApp" | SwiftUI + SwiftData (Xcode) | Código generado, **no compilado** |
-| `prompt_3` | App "Clima Rápido" | Flutter (Dart) | Funcionó en vista previa web |
-| `prompt_4` (modificado) | Análisis del repo y modo oscuro | Flutter (Dart) | Funcionó en web, Android no probado |
+| 1 (`prompt_1`) | Lista de tareas desde cero | HTML, CSS, JavaScript | Funcionó, con una corrección |
+| 2 (`prompt_2`) | App "GastosApp" | SwiftUI + SwiftData (Xcode) | Código generado, **no compilado** |
+| 3 (`prompt_3/flutter_app`) | App "Clima Rápido" | Flutter (Dart) | Funcionó en vista previa web |
+| 4 (`prompt_3/flutter_app`) | Análisis del repo y modo oscuro | Flutter (Dart) | Funcionó en web, Android no probado |
+| 5 (`prompt_3/flutter_app`) | Color azul oscuro, Configuración y persistencia | Flutter (Dart) | Funcionó en web, Android no probado |
+
+> **Nota:** los prompts 3, 4 y 5 trabajan sobre la misma carpeta. `prompt_3/flutter_app` contiene la versión final (después del prompt 5). La versión original del prompt 3 está en el primer commit del historial de Git. Los archivos `cambios.patch` y `cambios_v2.patch` documentan los cambios.
 
 ---
 
@@ -86,12 +89,42 @@ flutter run
 
 ---
 
-## Conclusiones preliminares
+## prompt_5: Iteración sobre el trabajo previo (Configuración y persistencia)
+
+**Prompt usado:** pedir al agente, en la misma conversación del prompt 4, que cambiara el color principal a azul oscuro, agregara una pantalla de Configuración con un interruptor de modo oscuro, guardara el tema elegido y corrigiera errores. Sin push, con enlaces completos y con honestidad sobre lo verificado.
+
+**Resultado:**
+- El agente retomó el contexto del prompt 4 y cumplió los 4 puntos.
+- Creó 3 archivos (`theme/app_colors.dart`, `services/settings_service.dart`, `screens/settings_screen.dart`) y modificó 8.
+- Agregó una dependencia nueva: `shared_preferences`.
+- Corrigió un error que él mismo había introducido (el switch de Configuración no respondía).
+- Hizo cambios no pedidos: título y descripción de la web, `manifest.json` y nombre de la app en Android.
+
+**Verificación declarada por el agente:**
+- `flutter analyze` sin problemas.
+- 6 tests pasan.
+- Compila en web.
+- **No probó** Android, iOS ni el guardado del tema en un celular real.
+
+**Limitaciones:**
+- Los enlaces de descarga siguen siendo temporales.
+- El grupo no pudo verificar la compilación en Android.
+- Los cambios no pedidos obligan a revisar más archivos de lo esperado.
+
+**Evidencia:** carpeta `prompt_3/evidencia_prompt_5/` con `cambios_v2.patch` y capturas.
+![Modo oscuro](prompt_3/evidencia_prompt_5/aleatorio.png) [contenido de 3 imagenes]
+
+---
+
+## Conclusiones
 
 - El agente es **honesto sobre sus límites** (en la prueba de SwiftUI avisó que no podía compilar).
 - Puede **compilar y previsualizar** web y Flutter, pero **no** apps nativas de Apple.
 - Dijo "verificado" en la prueba 1 y aun así falló en el equipo del usuario: probó en su entorno, no en el nuestro.
 - Los enlaces de descarga son temporales y hay que bajar los archivos rápido.
 - Pudo leer un repositorio existente desde un link, encontrar errores y entregar cambios sin hacer push.
+- Pudo iterar sobre su propio trabajo: recordó el contexto, cumplió los 4 cambios y corrigió un error que él mismo introdujo.
+- Hizo cambios que no se le pidieron (archivos web y de Android), así que hay que revisar siempre el patch.
+- Ninguna app móvil se probó en un celular real o emulador. Solo se probaron las versiones web (prompt 1 y la vista previa de Flutter).
 
 > Proyectos generados por Genspark Code como parte de un trabajo grupal. No son código de producción.
